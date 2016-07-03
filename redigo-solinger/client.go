@@ -1,3 +1,57 @@
+// This is a golang redigo based redis client that can be used to open (many)
+// concurrent connections to a redis server, with socket lingering off. Due to
+// this, the client gets to close all open concurrent connections as soon as
+// possible, without the sockets entering TIME_WAIT state.
+//
+// In order to achieve this sort of concurrency, the following changes are
+// suggested on the client side:
+//
+// ==== increase soft & hard limits on open FDs for root & normal users ===
+// ubuntu@redigo-client:~$ tail -7 /etc/security/limits.conf
+//
+// *    soft nofile 64000
+// *    hard nofile 64000
+// root soft nofile 64000
+// root hard nofile 64000
+//
+// # End of file
+// ====
+//
+// On the (redis) server increase FDs as above and tune networking as follows:
+// ====
+// // ubuntu@redis-ports:~$ tail -27 /etc/sysctl.conf
+//
+// # Allow reuse of sockets in TIME_WAIT state for new connections
+// # only when it is safe from the network stack’s perspective.
+// net.ipv4.tcp_tw_reuse = 1
+//
+// # pending connections are kept in a socket buffer; 500K per socket
+// #
+// net.core.rmem_max = 500000
+// net.core.wmem_max = 500000
+//
+// # Increase the number of outstanding syn requests allowed.
+// # c.f. The use of syncookies.
+// net.ipv4.tcp_max_syn_backlog = 10000
+// net.ipv4.tcp_syncookies = 1
+//
+// # The maximum number of "backlogged sockets".  Default is 128.
+// net.core.somaxconn = 10000
+//
+// # How may times to retry before killing TCP connection, closed by our side.
+// # Avoids too many sockets in FIN-WAIT-1 state (default 0 which means 8!).
+// # (see also: /proc/sys/net/ipv4/tcp_max_orphans)
+// net.ipv4.tcp_orphan_retries = 1
+//
+// # Time to hold socket in state FIN-WAIT-2, if it was closed by our side
+// # Reduces time for sockets to be in FIN-WAIT-2 state (default 60secs).
+// net.ipv4.tcp_fin_timeout = 30
+// #
+// ubuntu@redis-ports:~$
+//
+// And run 'sysctl -p' after modifying sysctl.conf as above
+// ====
+
 package	main
 
 import	"flag"
@@ -8,8 +62,17 @@ import	"strconv"
 import  "sync"
 import	"github.com/garyburd/redigo/redis"
 
+// This is one explanation of turning off socket lingering. This depends
+// heavily on the OS flavour.:
+//
+// When socket lingering is off, close() returns immediately. The underlying
+// stack discards any unsent data, and, in the case of connection-oriented
+// protocols such as TCP, sends a RST (reset) to the peer (this is termed
+// a hard or abortive close). All subsequent attempts by the peer's application
+// to read()/recv() data will result in an ECONNRESET.
+
 const	SO_LINGER_OFF	int = 0
-// const	RedisAddr	string = "172.31.13.70:6379"
+
 const	RedisAddr	string = "172.31.2.145:6379"
 
 func	setupRedisPool(so_linger int) (redis.Conn, error) {
