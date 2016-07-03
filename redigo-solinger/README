@@ -1,0 +1,3 @@
+limits.conf: Shows how FDs are to be increased in /etc/security/limits.conf
+
+sysctl.conf: Shows how networking is be to configured in /etc/security/limits.conf. Note that 'sysctl -p' is to be run after making this mod.
