@@ -75,6 +75,8 @@ const	SO_LINGER_OFF	int = 0
 
 const	RedisAddr	string = "172.31.2.145:6379"
 
+// setupRedisPool(): Custom dialer function to return a TCP connection
+// with socketing lingering turned off.
 func	setupRedisPool(so_linger int) (redis.Conn, error) {
 	redisAddr, _ := net.ResolveTCPAddr("tcp", RedisAddr)
 
@@ -114,6 +116,11 @@ func	newPool() *redis.Pool {
 	}
 }
 
+// runRedisClients():
+// Launches multiple concurrent client connection bursts,
+// with 'cps' concurrent client connections per burst,
+// each burst seperated by 'gaps' seconds from the next burst,
+// and the total run spread *approximately* over 'durs' seconds.
 func	runRedisClients(pool *redis.Pool, cps, durs, gaps int) {
 	epoch := time.Now()
 	nBursts := durs/gaps
