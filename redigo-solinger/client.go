@@ -136,9 +136,23 @@ func	main() {
 
 	if pool != nil {
 		fmt.Println("pool ActiveCount: ", pool.ActiveCount())
-		fmt.Println("pool IdleCount: ", pool.IdleCount())
+
+		// IdleCount() is a custom implementation; see comments below
+		// fmt.Println("pool IdleCount: ", pool.IdleCount())
+
 		pool.Close()
+
 		fmt.Println("pool ActiveCount: ", pool.ActiveCount())
-		fmt.Println("pool IdleCount: ", pool.IdleCount())
+		// fmt.Println("pool IdleCount: ", pool.IdleCount())
 	}
 }
+
+// Add this to "github.com/garyburd/redigo/redis/pool.go" for IdleCount()
+//
+// IdleCount returns the number of active connections in the pool.
+// func (p *Pool) IdleCount() int {
+//        p.mu.Lock()
+//        idles := p.idle.Len()
+//        p.mu.Unlock()
+//        return idles
+// }
