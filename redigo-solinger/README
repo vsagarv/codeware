@@ -2,6 +2,14 @@
 
 ./sysctl.conf: Shows how networking is be to configured in /etc/security/limits.conf. Note that 'sysctl -p' is to be run after making this mod.
 
+client: Run it as
+	$ ./client -h
+	$ ./client -cps 8000 -durs 20 > ~/tmp/op 2>&1 &
+
+monitor-redis-conns: Run it as:
+	$ ~/bin/monitor-redis-conns > ~/tmp/redis-load.op 2>&1 &
+
+
 === some notes on configuring systems for large #concurrent connections
 
 https://www.3scale.net/2015/04/how-to-load-test-and-tune-performance-on-your-api-part-i/
