@@ -1,3 +1,55 @@
-limits.conf: Shows how FDs are to be increased in /etc/security/limits.conf
+./limits.conf: Shows how FDs are to be increased in /etc/security/limits.conf
 
-sysctl.conf: Shows how networking is be to configured in /etc/security/limits.conf. Note that 'sysctl -p' is to be run after making this mod.
+./sysctl.conf: Shows how networking is be to configured in /etc/security/limits.conf. Note that 'sysctl -p' is to be run after making this mod.
+
+=== some notes on configuring systems for large #concurrent connections
+
+https://www.3scale.net/2015/04/how-to-load-test-and-tune-performance-on-your-api-part-i/
+
+https://groups.google.com/forum/#!topic/golang-nuts/coc6bAl2kPM
+
+http://marcio.io/2015/07/handling-1-million-requests-per-minute-with-golang/
+
+https://www.iron.io/how-we-went-from-30-servers-to-2-go/
+
+Redis tuning: http://shokunin.co/blog/2014/11/11/operational_redis.html
+
+
+Client ports, IP aliasing, kernel memory tuning ...:
+* https://mrotaru.wordpress.com/2013/10/10/scaling-to-12-million-concurrent-connections-how-migratorydata-did-it/
+
+TIME_WAIT:
+* https://vincent.bernat.im/en/blog/2014-tcp-time-wait-state-linux.html
+* http://www.serverframework.com/asynchronousevents/2011/01/time-wait-and-its-design-implications-for-protocols-and-scalable-servers.html
+
+SO_LINGER:
+* http://jiajizhou.com/2015/05/17/a-simple-http-load-testing-client-in-go.html
+* http://stackoverflow.com/questions/3757289/tcp-option-so-linger-zero-when-its-required
+
+Redigo and TCP socket options:
+* https://github.com/garyburd/redigo/issues/104
+tc, err := net.DialTCP("tcp", nil, addr)
+if err != nil {
+    // handle error
+}
+if err := tc.SetKeepAlive(true); err != nil {
+   // handle error
+}
+if err := tc.SetKeepAlivePeriod(d); err != nil {
+  // handle error
+}
+c := redis.NewConn(tc, readTimeout, writeTimeout)
+
+SOCKET BACKLOG:
+http://stackoverflow.com/questions/410616/increasing-the-maximum-number-of-tcp-ip-connections-in-linux
+
+FILE DESCRIPTORS / ULIMIT:
+https://underyx.me/2015/05/18/raising-the-maximum-number-of-file-descriptors
+
+SOCKET MEMORY / ORPHANS:
+http://www.linux-admins.net/2013/01/troubleshooting-out-of-socket-memory.html
+
+KERNEL TCP TUNING PARAMS:
+http://www.tldp.org/HOWTO/Adv-Routing-HOWTO/lartc.kernel.obscure.html
+
+# End-of-file
