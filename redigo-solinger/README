@@ -8,7 +8,7 @@ client: Run it as
 
 monitor-redis-conns: Run it on both the client & redis server as:
 	$ ~/bin/monitor-redis-conns > ~/tmp/redis-load.op 2>&1 &
-	$ # remember to do stop the monitor after the load test ends
+	$ # remember to stop the monitor after the load test ends
 
 
 === some notes on configuring systems for large #concurrent connections
