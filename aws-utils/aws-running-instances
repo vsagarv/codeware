@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# aws cli needs to be configured for this to run
+# -- vijaya.sagar@amagi.com
+
+# us-east-1 US East (N. Virginia)
+# us-west-2 US West (Oregon)
+# us-west-1 US West (N. California)
+# eu-west-1 EU (Ireland)
+# eu-central-1 EU (Frankfurt)
+# ap-southeast-1 Asia Pacific (Singapore)
+# ap-northeast-1 Asia Pacific (Tokyo)
+# ap-southeast-2 Asia Pacific (Sydney)
+# ap-northeast-2 Asia Pacific (Seoul)
+# ap-south-1 Asia Pacific (Mumbai)
+# sa-east-1 South America (São Paulo)
+
+AWS_REGIONS=('us-east-1' 'us-west-2' 'us-west-1' 'eu-west-1' 'eu-central-1' 'ap-southeast-1' 'ap-northeast-1' 'ap-southeast-2' 'ap-northeast-2' 'ap-south-1' 'sa-east-1')
+AWS_REGION_NAMES=('N. Virginia' 'Oregon' 'N. California' 'Ireland' 'Frankfurt' 'Singapore' 'Tokyo' 'Sydney' 'Seoul' 'Mumbai' 'São Paulo')
+
+N_AWS_REGIONS=${#AWS_REGIONS[*]}
+
+# list_running_instances: lists running instances in AWS_REGIONS
+function list_running_instances() {
+	echo "List of running instances as on $(date):"
+	echo "NameTag, InstanceType, LaunchTime, PublicIP, InstanceId"
+
+	echo "================================================================================================================"
+	echo ""
+
+	for (( i=0; $i < $N_AWS_REGIONS; i++ ))
+	do
+		region="${AWS_REGIONS[$i]} (${AWS_REGION_NAMES[$i]})"
+		aws --region ${AWS_REGIONS[$i]} --output table ec2 describe-instances --query 'Reservations[*].Instances[*].[Tags[0].Value, InstanceType, LaunchTime, PublicIpAddress, InstanceId]' --filter 'Name=instance-state-name,Values=running' | sed "s/DescribeInstances.*/$region/"
+		echo ""
+	done
+
+	echo "================================================================================================================"
+}
+
+function stop_unnecessary_instances() {
+	echo "stop_unnecessary_instances: TBD"
+}
+
+list_running_instances
+stop_unnecessary_instances
+
+# TODO: verbose -v:
+		# echo "NameTag, InstanceType, State, LaunchTime, PublicDnsName, AZ, Key, InstanceId"
+		# aws --region ${AWS_REGIONS[$i]} --output table ec2 describe-instances --query 'Reservations[*].Instances[*].[Tags[0].Value, InstanceType, State.Name, LaunchTime, PublicDnsName, Placement.AvailabilityZone, KeyName, InstanceId]' --filter 'Name=instance-state-name,Values=running'
+
+# TODO: verbose -vv (just drop the --query altogether)
