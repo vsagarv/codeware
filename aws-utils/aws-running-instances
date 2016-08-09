@@ -31,7 +31,7 @@ function list_running_instances() {
 	for (( i=0; $i < $N_AWS_REGIONS; i++ ))
 	do
 		region="${AWS_REGIONS[$i]} (${AWS_REGION_NAMES[$i]})"
-		aws --region ${AWS_REGIONS[$i]} --output table ec2 describe-instances --query 'Reservations[*].Instances[*].[Tags[0].Value, InstanceType, LaunchTime, PublicIpAddress, InstanceId]' --filter 'Name=instance-state-name,Values=running' | sed "s/DescribeInstances.*/$region/"
+		aws --region ${AWS_REGIONS[$i]} --output table ec2 describe-instances --query 'Reservations[*].Instances[*].[Tags[?Key==`Name`] | [0].Value, InstanceType, LaunchTime, PublicIpAddress, InstanceId]' --filter 'Name=instance-state-name,Values=running' | sed "s/DescribeInstances.*/$region/"
 		echo ""
 	done
 
