@@ -27,6 +27,10 @@ suggested on the client side:
 
 	# End of file
 
+2. Enable the limits in /etc/pam.d/common-session and /etc/pam.d/common-session-noninteractive by adding this line:
+
+session required pam_limits.so
+
 ===
 
 And on the (redis) server m/c:
