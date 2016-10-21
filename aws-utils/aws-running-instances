@@ -4,6 +4,7 @@
 # -- vijaya.sagar@amagi.com
 
 # us-east-1 US East (N. Virginia)
+# us-east-2 US East (Ohio)
 # us-west-2 US West (Oregon)
 # us-west-1 US West (N. California)
 # eu-west-1 EU (Ireland)
@@ -15,8 +16,8 @@
 # ap-south-1 Asia Pacific (Mumbai)
 # sa-east-1 South America (São Paulo)
 
-AWS_REGIONS=('us-east-1' 'us-west-2' 'us-west-1' 'eu-west-1' 'eu-central-1' 'ap-southeast-1' 'ap-northeast-1' 'ap-southeast-2' 'ap-northeast-2' 'ap-south-1' 'sa-east-1')
-AWS_REGION_NAMES=('N. Virginia' 'Oregon' 'N. California' 'Ireland' 'Frankfurt' 'Singapore' 'Tokyo' 'Sydney' 'Seoul' 'Mumbai' 'São Paulo')
+AWS_REGIONS=('us-east-1' 'us-east-2' 'us-west-2' 'us-west-1' 'eu-west-1' 'eu-central-1' 'ap-southeast-1' 'ap-northeast-1' 'ap-southeast-2' 'ap-northeast-2' 'ap-south-1' 'sa-east-1')
+AWS_REGION_NAMES=('N. Virginia' 'Ohio' 'Oregon' 'N. California' 'Ireland' 'Frankfurt' 'Singapore' 'Tokyo' 'Sydney' 'Seoul' 'Mumbai' 'São Paulo')
 
 N_AWS_REGIONS=${#AWS_REGIONS[*]}
 
