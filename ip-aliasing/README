@@ -1,0 +1,8 @@
+"How to receive a million packets per second"
+https://blog.cloudflare.com/how-to-receive-a-million-packets/
+
+Golang - bind a socket to an network interface
+https://golang.org/pkg/syscall/#BindToDevice
+see also: http://grokbase.com/t/gg/golang-nuts/13ahjmfycv/go-nuts-any-way-to-find-active-network-interface
+
+https://play.golang.org/p/2IrtRqdGit
