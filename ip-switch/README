@@ -1,0 +1,28 @@
+# How to try it out:
+
+## The multicast UDP switch
+
+1. Enable multicasting on your m/c 
+
+2. Run two netcat sessions, as two udp sources
+   * nc -i 5 -u 228.0.0.4 5001 < /dev/zero
+   * nc -i 5 -u 228.0.0.4 5002 < /dev/random
+
+3. Run mc_rx.go as the multicast sync, say configured to listen on 228.0.0.50:6001
+
+4. At this stage, the traffic from the sources is not yet reaching the sync. Now, run
+   the switch configured to switch between the above sources & push the switched data
+   to the destination.
+
+5. Stop (Ctrl-Z, say) source#1 and see the switch picking data from the
+   source#2. Now, stop source#2 and see the switch to source#1 (which is stopped).
+   The switch keeps looking for one of the sources to become available, until one of
+   them is resumed.
+
+
+## Notes
+1. Enabling multicast on Mac OSX: 
+   https://blogs.agilefaqs.com/2009/11/08/enabling-multicast-on-your-macos-unix/
+
+2. A multicast HOWTO:
+   http://www.ibiblio.org/pub/Linux/docs/HOWTO/other-formats/html_single/Multicast-HOWTO.html#s5
