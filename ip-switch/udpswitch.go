@@ -9,7 +9,6 @@ package	main
 //  - N input IP:PORT pairs and 1 output IP:PORT pair
 
 import	(
-	"fmt"
 	"log"
 	"strconv"
 	"os"
@@ -20,18 +19,12 @@ import	(
 )
 
 const (
-	maxDatagramSize = 2048	// datagrams are 'usually' smaller ~1500b
+	maxDatagramSize = 8192	// datagrams are 'usually' far smaller ~1500b
 	inputReadTimeout = 10 * time.Second // no data for 10seconds on a streaming MPEG TS channel is quite likely a breakdown, with the usual bit rates (VBR/CBR)
 )
 
-func	main() {
-	srcs := [2]string {"228.0.0.4:5001", "228.0.0.4:5002"}
-	dst := "228.0.0.50:6001"
-
-	stream_out(srcs, dst)
-}
-
 func	open_udp_conn(saddr string) (*net.UDPConn, error) {
+
 	addr, err := net.ResolveUDPAddr("udp4", saddr)
 	if err != nil {
 		log.Fatal(err)
@@ -42,18 +35,44 @@ func	open_udp_conn(saddr string) (*net.UDPConn, error) {
 		log.Fatal(err)
 	}
 
+	conn.SetReadBuffer(maxDatagramSize)
+
 	return conn, err
 }
 
-func	open_mc_udp_conn(saddr string) (*net.UDPConn, error) {
+func	listen_udp_conn(saddr string) (*net.UDPConn, error) {
+
 	addr, err := net.ResolveUDPAddr("udp", saddr)
 	if err != nil {
 		log.Fatal(err)
 	}
-	l, err := net.ListenMulticastUDP("udp", nil, addr)	// TODO: set Interface
-	l.SetReadBuffer(maxDatagramSize)
 
-	return l, err
+	conn, err := net.ListenUDP("udp", addr)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	conn.SetReadBuffer(maxDatagramSize)
+
+	return conn, err
+}
+
+// TODO: DRY with listen_udp_conn
+func	listen_mc_udp_conn(saddr string) (*net.UDPConn, error) {
+
+	addr, err := net.ResolveUDPAddr("udp", saddr)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	conn, err := net.ListenMulticastUDP("udp", nil, addr)	// TODO: set Interface
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	conn.SetReadBuffer(maxDatagramSize)
+
+	return conn, err
 }
 
 // stream_out():
@@ -61,9 +80,10 @@ func	open_mc_udp_conn(saddr string) (*net.UDPConn, error) {
 func	stream_out(srcs [2]string, dst string) {
 	var	src_conns []*net.UDPConn
 
-	// setup source connections
+	// listen to sources
 	for _, src := range srcs {
-		conn, err := open_mc_udp_conn(src)
+		// conn, err := listen_mc_udp_conn(src)
+		conn, err := listen_udp_conn(src)
 		if err != nil {
 			// don't die unless all input sources are DOA
 			log.Println(err)
@@ -78,14 +98,14 @@ func	stream_out(srcs [2]string, dst string) {
 	log.Println("#sources: ", n_src_conns)
 
 	if n_src_conns == 0 {
-		fmt.Println("ERROR: No input sources are reachable")
+		log.Println("ERROR: No input sources are reachable")
 		return
 	}
 
 	// setup destination connection
 	dst_conn, err := open_udp_conn(dst)
 	if err != nil {
-		fmt.Println("ERROR: Output destination unreachable")
+		log.Println("ERROR: Output destination unreachable")
 		return
 	}
 
@@ -127,9 +147,24 @@ func	stream_out(srcs [2]string, dst string) {
 		} else {
 			_, err = dst_conn.Write(buf[0:n])
 			if err != nil {
-				fmt.Println("ERROR: ", err)
+				log.Println("ERROR: ", err)
 				// nothing much can be done; carry on, Jeeves.
 			}
 		}
 	}
+}
+
+
+// udp-switch test driver
+
+func	main() {
+	// unicast
+	srcs := [2]string {"127.0.0.1:15001", "127.0.0.1:15002"}
+	dst := "127.0.0.1:16001"
+
+	// multicast
+	// srcs := [2]string {"228.0.0.4:15001", "228.0.0.4:15002"}
+	// dst := "228.0.0.50:16001"
+
+	stream_out(srcs, dst)
 }
