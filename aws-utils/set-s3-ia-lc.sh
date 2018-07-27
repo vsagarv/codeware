@@ -47,16 +47,18 @@ check_and_set_lifecycle_config() {
 			echo "sure? [yes/no]"
 			while read yes_no </dev/tty
 			do
-				echo "yes_no: $yes_no"
+				# echo "yes_no: $yes_no"
 				[ "$yes_no" = "yes" -o "$yes_no" = "no" ] && break
 			done
 
 			if [ "$yes_no" = "no" ]
 			then
 				echo "phew! the wise are cautious."
+				echo "..."
 			elif [ "$yes_no" = "yes" ]
 			then
 				echo "okay, may fortune favour the brave!"
+				echo "..."
 				aws --profile=${cli_profile} s3api put-bucket-lifecycle \
 					--bucket ${bucket_name} --lifecycle-configuration file://$TMPDIR/s3_to_ia_lifecycle.json
 			else
