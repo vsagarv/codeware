@@ -26,3 +26,26 @@ Lists all running instances in an AWS account, region wise, with some instance a
   * sa-east-1 South America (São Paulo)
   
   ----
+
+# 3. set-s3-ia-lc
+
+Sets S3IA lifecycle transitions for AWS S3 buckets.
+Also aborts incomplete multipart uploads.
+
+**usage**: <pre>set-s3-ia-lc.sh -p \<AWS CLI profile> -r \<AWS region> [-d \<days>]</pre>
+
+\# reads a list of S3 bucket names - one per line - from stdin
+
+\# -p: AWS CLI profile (--profile arg of aws command)
+
+\# -r: AWS region of the S3 buckets
+
+\# -d: Number of days (>= 30) after which an asset has to move from S3 to S3-IA (default = 30)
+
+**Dependencies**:
+ 
+  1. A reference JSON file "s3_to_ia_lifecycle.json" in the same directory where this script is being run from. The JSON can be infered from a skeleton generated with this command:
+  $ aws s3api put-bucket-lifecycle --generate-cli-skeleton
+
+  2. Tested on macOS 10.12.5 with:
+  aws-cli/1.15.60 Python/3.7.0 Darwin/16.6.0 botocore/1.10.59
