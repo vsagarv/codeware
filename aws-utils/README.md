@@ -45,7 +45,8 @@ Also aborts incomplete multipart uploads.
 **Dependencies**:
  
   1. A reference JSON file "s3_to_ia_lifecycle.json" in the same directory where this script is being run from. The JSON can be infered from a skeleton generated with this command:
-  $ aws s3api put-bucket-lifecycle --generate-cli-skeleton
+  
+  <pre>$ aws s3api put-bucket-lifecycle --generate-cli-skeleton</pre>
 
   2. Tested on macOS 10.12.5 with:
   aws-cli/1.15.60 Python/3.7.0 Darwin/16.6.0 botocore/1.10.59
