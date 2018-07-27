@@ -27,7 +27,7 @@ Lists all running instances in an AWS account, region wise, with some instance a
   
   ----
 
-# 3. set-s3-ia-lc
+# 2. set-s3-ia-lc
 
 Sets S3IA lifecycle transitions for AWS S3 buckets.
 Also aborts incomplete multipart uploads.
