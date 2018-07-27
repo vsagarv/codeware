@@ -42,6 +42,11 @@ Also aborts incomplete multipart uploads.
 
 \# -d: Number of days (>= 30) after which an asset has to move from S3 to S3-IA (default = 30)
 
+* Example run
+
+  Run the script for all buckets in ap-south-1 region with the AWS CLI profile "test-aws-account"
+  * <pre>$ aws --profile=test-aws-account s3 --region=ap-south-1 ls | awk '{print $3}' | set-s3-ia-lc.sh -p test-aws-account -r ap-south-1 -d 45</pre>
+  
 **Dependencies**:
  
   1. A reference JSON file "s3_to_ia_lifecycle.json" in the same directory where this script is being run from. The JSON can be infered from a skeleton generated with this command:
